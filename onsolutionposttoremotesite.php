@@ -66,14 +66,31 @@ register_activation_hook( __FILE__, 'activate' );
 
 function deactivate(){
 	//DB Removal here
-	
+	global $wpdb;//required global declaration of WP variable
+
+	//Table for remote sites
+	$osrp_remote_sites = $wpdb->prefix . 'osrp_remote_sites';
+	$tbl_remote_sites = "DROP TABLE ".  $osrp_remote_sites;
+	$wpdb->query($tbl_remote_sites);
+
+	//Table for word replacements
+	$osrp_word_replacements = $wpdb->prefix . 'osrp_word_replacements';
+	$tbl_word_replacements = "DROP TABLE ".  $osrp_word_replacements;
+	$wpdb->query($tbl_word_replacements);
+
+	//Table for the list of posts that have been distributed
+	$osrp_distributed_posts = $wpdb->prefix . 'osrp_distributed_posts';
+	$tbl_distributed_posts = "DROP TABLE ".  $osrp_distributed_posts;
+	$wpdb->query($tbl_distributed_posts);
+
+	//Table for photo substitutions
+	$osrp_photo_substitutions = $wpdb->prefix . 'osrp_photo_substitutions';
+	$tbl_photo_substitutions = "DROP TABLE ".  $osrp_photo_substitutions;
+	$wpdb->query($tbl_photo_substitutions);
 }
 
 register_deactivation_hook( __FILE__, 'deactivate' );
 
-
-
-
-Class remotePost{
+Class remotePost {
 
 }
