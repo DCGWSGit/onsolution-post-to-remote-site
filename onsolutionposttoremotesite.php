@@ -29,8 +29,8 @@ function activate(){
 	$tbl_word_replacements = "CREATE TABLE " . $osrp_word_replacements . " (
 			ID INT(11) NOT NULL AUTO_INCREMENT,
 			site_ID INT(11) NOT NULL,
-			search mediumtext NOT NULL,
-			replace mediumtext NOT NULL,				
+			original mediumtext NOT NULL,
+			replacement mediumtext NOT NULL,				
 			UNIQUE KEY id (ID)
 		)";
 
