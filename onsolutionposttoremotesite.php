@@ -91,6 +91,99 @@ function deactivate(){
 
 register_deactivation_hook( __FILE__, 'deactivate' );
 
-Class remotePost {
 
+
+// adding menu on the wordpress dashboard
+add_action( 'admin_menu', 'osrp_fn_menu_page' );
+
+function osrp_fn_menu_page(){
+    add_menu_page( 'OnSolution Configuration Page', 'OnSolution', 'manage_options', 'osrp-configuration-page', 'osrp_menu_page','',6); 
+    $submenu['osrp-configuration-page'] = array();
+    add_submenu_page( 'osrp-configuration-page', 'List of word substitutions', 'List of word substitutions', 'manage_options', 'osrp-list-of-word-subsitutions', 'osrp_list_word_subsitutions' );
+}
+
+
+//for configuration page
+function osrp_menu_page(){
+    $html = '<div class="wrap">
+				<h2>OnSolution Configuration <a href="" class="add-new-h2">Add New Site</a></h2>
+
+				<div class="postbox"></div>
+				<style type="text/css">
+			        .postbox h3.hndle {
+			            font-size: 15px;
+			            font-weight: bold;
+			            padding: 7px 10px;
+			            margin: 0;
+			            line-height: 1;
+			        }
+			        .postbox .domainname{
+			        	width:250px;
+			        }
+			        .postbox .description{
+			        	width:360px;
+			        }
+			    </style>
+				<div class="postbox">
+					<h3 class="hndle"><span>Site Information</span></h3>
+
+					<table class="wp-list-table widefat fixed pages" cellspacing="0">
+                            <thead>
+                            	<tr>
+                            		<th class="domainname">Domain name</th>
+                            		<th class="description">Description</th>
+                            		<th>Username</th>
+                            		<th>Password</th>
+                            		<th>Frequency of Posts</th>
+                            		<th>Last scheduled date</th>
+                            	</tr>
+							</thead>
+
+							<tfoot>
+                            	<tr>
+                            		<th class="domainname">Domain name</th>
+                            		<th class="description">Description</th>
+                            		<th>Username</th>
+                            		<th>Password</th>
+                            		<th>Frequency of Posts</th>
+                            		<th>Last scheduled date</th>
+                            	</tr>
+							</tfoot>
+
+							<tbody>
+                            	<tr>
+                            		<td class="domainname">
+                            			<strong>www.localhost.com</strong>
+                            			<div class="row-actions">
+                            				<span class="edit">
+                            					<a href="" title="Edit this item">Edit</a> 
+                            					| 
+                            				</span>
+                            				<span class="trash">
+                            				    <a class="submitdelete" title="Move this item to the Trash" href="#">Trash</a> 
+                            				</span>
+                            			</div>
+                            		</td>
+                            		<td class="description">Welcome to WordPress. This is your first post. Edit or delete it, then start blogging!</td>
+                            		<td>admin</td>
+                            		<td>ca7a2f04ff3c9469a9be02aa6df100756fde57bc</td>
+                            		<td>150</td>
+                            		<td>2014/01/22 3:03:57 AM Published</td>
+                            	</tr>
+							</tbody>
+                    </table>
+				</div>
+			 </div>';
+
+	echo  $html;
+}
+
+//List of word subsitutions page
+function osrp_list_word_subsitutions(){
+	 $html = '<div class="wrap">
+				<h2>OnSolution List of Remote Sites<a href="" class="add-new-h2">Add New Site</a></h2>
+				
+			 </div>';
+
+	echo  $html;
 }
