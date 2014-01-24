@@ -98,15 +98,15 @@ add_action( 'admin_menu', 'osrp_fn_menu_page' );
 
 function osrp_fn_menu_page(){
     add_menu_page( 'OnSolution Configuration Page', 'OnSolution', 'manage_options', 'osrp-configuration-page', 'osrp_menu_page','',6); 
-    $submenu['osrp-configuration-page'] = array();
-    add_submenu_page( 'osrp-configuration-page', 'List of word substitutions', 'List of word substitutions', 'manage_options', 'osrp-list-of-word-subsitutions', 'osrp_list_word_subsitutions' );
+    add_submenu_page( 'osrp-configuration-page', 'List of Remote Sites', 'List of Remote Sites', 'manage_options', 'osrp-configuration-page', 'osrp_menu_page' );
+    add_submenu_page( 'osrp-configuration-page', 'Add New', 'Add New', 'manage_options', 'osrp-add-new', 'osrp_add_new' );
 }
 
 
 //for configuration page
 function osrp_menu_page(){
     $html = '<div class="wrap">
-				<h2>OnSolution Configuration <a href="" class="add-new-h2">Add New Site</a></h2>
+				<h2>List of Remote Sites <a href="" class="add-new-h2">Add New Site</a></h2>
 
 				<div class="postbox"></div>
 				<style type="text/css">
@@ -121,7 +121,7 @@ function osrp_menu_page(){
 			        	width:250px;
 			        }
 			        .postbox .description{
-			        	width:360px;
+			        	width:350px;
 			        }
 			    </style>
 				<div class="postbox">
@@ -134,8 +134,8 @@ function osrp_menu_page(){
                             		<th class="description">Description</th>
                             		<th>Username</th>
                             		<th>Password</th>
-                            		<th>Frequency of Posts</th>
-                            		<th>Last scheduled date</th>
+                            		<th style="text-align:center;">Frequency of Posts</th>
+                            		<th style="text-align:center;">Last scheduled date</th>
                             	</tr>
 							</thead>
 
@@ -145,8 +145,8 @@ function osrp_menu_page(){
                             		<th class="description">Description</th>
                             		<th>Username</th>
                             		<th>Password</th>
-                            		<th>Frequency of Posts</th>
-                            		<th>Last scheduled date</th>
+                            		<th style="text-align:center;">Frequency of Posts</th>
+                            		<th style="text-align:center;">Last scheduled date</th>
                             	</tr>
 							</tfoot>
 
@@ -166,23 +166,132 @@ function osrp_menu_page(){
                             		</td>
                             		<td class="description">Welcome to WordPress. This is your first post. Edit or delete it, then start blogging!</td>
                             		<td>admin</td>
-                            		<td>ca7a2f04ff3c9469a9be02aa6df100756fde57bc</td>
-                            		<td>150</td>
-                            		<td>2014/01/22 3:03:57 AM Published</td>
+                            		<td>•••••••</td>
+                            		<td style="text-align:center;">150</td>
+                            		<td style="text-align:center;">2014/01/22 3:03:57 AM Published</td>
                             	</tr>
 							</tbody>
                     </table>
 				</div>
-			 </div>';
+			 </div>
+
+			 <div class="postbox" style="width: 800px;">
+					<h3 class="hndle"><span>List of word substitutions</span></h3>
+
+					<table class="wp-list-table widefat fixed pages" cellspacing="0">
+                            <thead>
+                            	<tr>
+                            		<th class="domainname">Domain name</th>
+                            		<th>Original Word</th>
+                            		<th>Replaced Word</th>
+                            	</tr>
+							</thead>
+
+							<tfoot>
+                            	<tr>
+                            		<th class="domainname">Domain name</th>
+                            		<th>Original Word</th>
+                            		<th>Replaced Word</th>
+                            	</tr>
+							</tfoot>
+
+							<tbody>
+                            	<tr>
+                            		<td class="domainname">
+                            				<strong>www.localhost.com</strong>
+                            				<div class="row-actions">
+	                            				<span class="edit">
+	                            					<a href="" title="Edit this item">Edit</a> 
+	                            					| 
+	                            				</span>
+	                            				<span class="trash">
+	                            				    <a class="submitdelete" title="Move this item to the Trash" href="#">Trash</a> 
+	                            				</span>
+	                            			</div>
+                            		</td>
+                            		<td>original word</td>
+                            		<td>test word</td>
+                            	</tr>
+							</tbody>
+                    </table>
+				</div>
+			 </div>
+			
+			 ';
 
 	echo  $html;
 }
 
-//List of word subsitutions page
-function osrp_list_word_subsitutions(){
+
+//Add new
+function osrp_add_new(){
 	 $html = '<div class="wrap">
-				<h2>OnSolution List of Remote Sites<a href="" class="add-new-h2">Add New Site</a></h2>
+				<h2>Add New Remote Site</h2>
 				
+				<div class="postbox"></div>
+				<style type="text/css">
+			        .postbox h3.hndle {
+			            font-size: 15px;
+			            font-weight: bold;
+			            padding: 7px 10px;
+			            margin: 0;
+			            line-height: 1;
+			        }
+			        .postbox .domainname{
+			        	width:250px;
+			        }
+			        .postbox .description{
+			        	width:350px;
+			        }
+			        .postbox input[type="text"],.postbox input[type="password"]{
+			        	width:250px;
+			        }
+			        .postbox input[type="button"]{
+			        	width:150px;
+			        }
+			        .postbox textarea{
+			        	width:450px;
+			        	height:100px;
+			        }
+			    </style>
+				 <div class="postbox" style="width: 800px;">
+				 <form>
+					<table class="wp-list-table widefat fixed pages" cellspacing="0">
+
+							<tbody>
+                            	<tr>
+                            	    <td style="width:100px;vertical-align: middle;"><strong>Site Name:</strong></td>
+                            		<td><input type="text" name="domain"/></td>
+                            	</tr>
+                            	<tr>
+                            	    <td style="width:100px;vertical-align: middle;"><strong>Username:</strong></td>
+                            		<td><input type="text" name="username"/></td>
+                            	</tr>
+                            	<tr>
+                            	    <td style="width:100px;vertical-align: middle;"><strong>Password:</strong></td>
+                            		<td><input type="password" name="password"/></td>
+                            	</tr>
+                            	<tr>
+                            	    <td style="width:100px;vertical-align: middle;"><strong>Description:</strong></td>
+                            		<td><textarea></textarea></td>
+                            	</tr>
+                            	<tr>
+                            	    <td style="width:100px;vertical-align: middle;"><strong>Frequency of Post:</strong></td>
+                            		<td><input type="text" name="frequency"/></td>
+                            	</tr>
+                            	<tr>
+                            	    <td style="width:100px;vertical-align: middle;"><strong>Schedule:</strong></td>
+                            		<td><input type="text" name="frequency"/></td>
+                            	</tr>
+                            	<tr>
+                            	    <td style="width:100px;vertical-align: middle;"></td>
+                            		<td><input type="button" name="test" id="test" class="button button-primary" value="Test Connection">  <input type="button" name="connect" id="connect" class="button button-primary" value="Connect">   <input type="button" name="connect" id="connect" class="button button-primary" value="Download"></td>
+                            	</tr>
+							</tbody>
+                    </table>
+                 </form>
+				</div>
+			 </div>
 			 </div>';
 
 	echo  $html;
