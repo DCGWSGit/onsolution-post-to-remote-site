@@ -359,7 +359,7 @@ function osrp_add_new(){
                             	</tr>
                             	<tr>
                             	    <td style="width:100px;vertical-align: middle;"></td>
-                            		<td><input type="submit" name="test" id="test" class="button button-primary" value="Save">  <input type="button" name="connect" id="connect" class="button button-primary" value="Connect">   <input type="button" name="connect" id="connect" class="button button-primary" value="Download"></td>
+                            		<td><input type="submit" name="test" id="test" class="button button-primary" value="Test Connection"></td>
                             	</tr>
 							</tbody>
                     </table>
