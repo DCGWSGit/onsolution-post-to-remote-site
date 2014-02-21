@@ -105,7 +105,9 @@ add_action( 'admin_menu', 'osrp_fn_menu_page' );
 function osrp_fn_menu_page(){
     add_menu_page( 'OnSolution Configuration Page', 'OnSolution', 'manage_options', 'osrp-list-of-remote-sites', 'osrp_menu_page','',6); 
     add_submenu_page( 'osrp-list-of-remote-sites', 'List of Remote Sites', 'List of Remote Sites', 'manage_options', 'osrp-list-of-remote-sites', 'osrp_menu_page' );
-    add_submenu_page( 'osrp-list-of-remote-sites', 'Add New', 'Add New', 'manage_options', 'osrp-add-new', 'osrp_add_new' );
+    add_submenu_page( 'osrp-list-of-remote-sites', 'List of Words', 'List of words', 'manage_options', 'osrp-list-word', 'osrp_list_word_replacements' );
+    add_submenu_page( 'osrp-list-of-remote-sites', 'Add New Remote Site', 'Add new remote site ', 'manage_options', 'osrp-add-new', 'osrp_add_new' );
+    add_submenu_page( 'osrp-list-of-remote-sites', 'Add New Word Replacement', 'Add new word', 'manage_options', 'osrp-add-new-word', 'osrp_word_replacements' );
 }
 
 
@@ -202,6 +204,9 @@ function osrp_menu_page(){
 				</div>
 			 </div>
 
+			<div class="wrap">
+			 <h2>List of Word Replace <a href="admin.php?page=osrp-add-new-word" class="add-new-h2">Add New Word</a></h2>
+
 			 <div class="postbox" style="width: 800px;">
 					<h3 class="hndle"><span>List of word substitutions</span></h3>
 
@@ -233,12 +238,8 @@ function osrp_menu_page(){
 		                            		<td class="domainname">
 		                            				<strong>'.$sitename->site_address.'</strong>
 		                            				<div class="row-actions">
-			                            				<span class="edit">
-			                            					<a href="" title="Edit this item">Edit</a> 
-			                            					| 
-			                            				</span>
 			                            				<span class="trash">
-			                            				    <a class="submitdelete" title="Move this item to the Trash" href="#">Trash</a> 
+			                            				    <a class="submitdelete" title="Move this item to the Trash" href="admin.php?page=osrp-list-word&delete='.$words->ID.'">Trash</a> 
 			                            				</span>
 			                            			</div>
 		                            		</td>
@@ -256,7 +257,7 @@ function osrp_menu_page(){
                     </table>
 				</div>
 			 </div>
-			
+			</div>
 			 ';
 
 	echo  $html;
@@ -452,3 +453,223 @@ function save_remote(){
 		}
 	}
 }	
+
+//word replacements
+
+function osrp_word_replacements(){ 
+	global $wpdb;
+
+	if(!empty($_POST['domain'])){
+
+		$id = $_POST['domain'];
+		$orig = $_POST['original-word'];
+		$rep  = $_POST['replace-word'];
+
+		$wordtable = $wpdb->prefix."osrp_word_replacements";
+
+				
+				$name = array(
+							'site_ID'      => $id,
+							'original'     => $orig,
+							'replacement'  => $rep
+						);
+
+				$sqls = $wpdb->insert($wordtable, $name, $format);
+
+		if($sqls){
+			echo '<div id="message" class="updated"><p>Word Saved</p></div>';
+		}
+	}
+?>
+	<div class="wrap">
+		<div class="postbox"></div>
+				<style type="text/css">
+			        .postbox h3.hndle {
+			            font-size: 15px;
+			            font-weight: bold;
+			            padding: 7px 10px;
+			            margin: 0;
+			            line-height: 1;
+			        }
+			        .postbox .domainname{
+			        	width:250px;
+			        }
+			        .postbox .description{
+			        	width:350px;
+			        }
+			        .postbox input[type="text"],.postbox input[type="password"]{
+			        	width:250px;
+			        }
+			        .postbox input[type="button"]{
+			        	width:150px;
+			        }
+			        .postbox textarea{
+			        	width:450px;
+			        	height:100px;
+			        }
+			        #wpfooter{
+				        display:none;
+				    }
+			    </style>
+				 <div class="postbox">
+				 	<h3 class="hndle"><span>List of word substitutions</span></h3>
+				 					<form method="post">
+                            			<table class="wp-list-table widefat fixed pages" cellspacing="0">
+					                            <thead>
+					                            	<tr>
+					                            		<th>Domain</th>
+					                            		<th>Original Word</th>
+					                            		<th>Replaced Word</th>
+					                            		<th></th>
+					                            	</tr>
+												</thead>
+
+												<tfoot>
+					                            	<tr>
+					                            		<th>Domain</th>
+					                            		<th>Original Word</th>
+					                            		<th>Replaced Word</th>
+					                            		<th></th>
+					                            	</tr>
+												</tfoot>
+
+												<tbody class="word-subs">
+															<tr>
+																<td>
+																	<select name="domain">
+																		<option>Domain</option>
+																		<?php 
+
+																			$table = $wpdb->prefix."osrp_remote_sites";
+																			$sql = $wpdb->get_results("SELECT * FROM $table");
+
+																			if(count($sql) > 0){
+																				foreach ($sql as $sites) {
+
+																						echo '<option value="'.$sites->ID.'">'.ucwords($sites->site_address).'</option>';
+																				}
+																		    }
+																		?>
+																    </select>
+															    </td>
+							                            		<td><input type="text" name="original-word" style="width:200px"/></td>
+							                            		<td><input type="text" name="replace-word"  style="width:200px"/></td>
+							                            		<td><input type="submit" class="add-word button button-primary" value="Add"/></td>
+							                            	</tr>
+							                    </tbody>
+					                    </table>
+					                </form>
+				 </div>
+	</div>
+<?php
+}
+
+function osrp_list_word_replacements(){
+	global $wpdb;
+
+	$table = $wpdb->prefix."osrp_remote_sites";
+	$table2 = $wpdb->prefix."osrp_word_replacements";
+
+	$sql2 = $wpdb->get_results("SELECT * FROM $table2");
+
+	$html   .='
+			<div class="wrap">
+			<div class="postbox"></div>
+				<style type="text/css">
+			        .postbox h3.hndle {
+			            font-size: 15px;
+			            font-weight: bold;
+			            padding: 7px 10px;
+			            margin: 0;
+			            line-height: 1;
+			        }
+			        .postbox .domainname{
+			        	width:250px;
+			        }
+			        .postbox .description{
+			        	width:350px;
+			        }
+			        .postbox input[type="text"],.postbox input[type="password"]{
+			        	width:250px;
+			        }
+			        .postbox input[type="button"]{
+			        	width:150px;
+			        }
+			        .postbox textarea{
+			        	width:450px;
+			        	height:100px;
+			        }
+			        #wpfooter{
+				        display:none;
+				    }
+			    </style>
+			 <h2>List of Word Replace <a href="admin.php?page=osrp-add-new-word" class="add-new-h2">Add New Word</a></h2>
+
+			 <div class="postbox" style="width: 800px;">
+					<h3 class="hndle"><span>List of word substitutions</span></h3>
+
+					<table class="wp-list-table widefat fixed pages" cellspacing="0">
+                            <thead>
+                            	<tr>
+                            		<th class="domainname">Domain name</th>
+                            		<th>Original Word</th>
+                            		<th>Replaced Word</th>
+                            	</tr>
+							</thead>
+
+							<tfoot>
+                            	<tr>
+                            		<th class="domainname">Domain name</th>
+                            		<th>Original Word</th>
+                            		<th>Replaced Word</th>
+                            	</tr>
+							</tfoot>
+
+							<tbody>';
+
+							if(count($sql2) > 0){
+								foreach ($sql2 as $words) {
+
+									$sitename = $wpdb->get_row("SELECT site_address FROM $table WHERE ID = $words->site_ID ");
+
+		                        $html .= '<tr>
+		                            		<td class="domainname">
+		                            				<strong>'.$sitename->site_address.'</strong>
+		                            				<div class="row-actions">
+			                            				<span class="trash">
+			                            				    <a class="submitdelete" title="Move this item to the Trash" href="admin.php?page=osrp-list-word&delete='.$words->ID.'">Trash</a> 
+			                            				</span>
+			                            			</div>
+		                            		</td>
+		                            		<td>'.$words->original.'</td>
+		                            		<td>'.$words->replacement.'</td>
+		                            	</tr>';
+                            	}
+                            }
+                            else{
+						    	$html .= '<tr><td colspan="3" style="text-align:center;"><strong>No word replacements found</strong></td></tr>';
+						    }
+
+
+	$html .= 				'</tbody>
+                    </table>
+				</div>
+			 </div>
+			</div>
+			 ';
+
+	if(!empty($_GET['delete'])){
+		if(!empty($_GET['no'])){
+			echo'<script> window.location="admin.php?page=osrp-list-word"; </script> ';
+		}
+
+		if(!empty($_GET['yes'])){
+			$sql = $wpdb->delete( $table2, array( 'ID' => $_GET['delete'] ) );
+			echo'<script> window.location="admin.php?page=osrp-list-word"; </script> ';
+		}
+
+		$html .= '<a name="delete"></a><div id="message" class="updated"><p>Are you sure you want to delete? <a href="'.$_SERVER['REQUEST_URI'].'&yes=1">Yes</a> or <a href="'.$_SERVER['REQUEST_URI'].'&no=1">No</a></p></div>';
+	}
+
+	echo  $html;
+}

@@ -1,0 +1,15 @@
+#osrp_table {
+	width: 100%;
+}
+#osrp_table select[multiple] {
+	width:580px;
+}
+#osrp_table tr td > label {
+	display: inline-block;
+	vertical-align: text-top;
+	width: 105px;
+	margin-bottom: 10px;
+}
+#osrp_table tr td #osrp_mb_postWhenSched {
+	margin-bottom: 10px;
+}
