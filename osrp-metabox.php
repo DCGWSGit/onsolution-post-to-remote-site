@@ -12,38 +12,77 @@ function osrp_meta_box_cb( $post )
 	//$text = isset( $values['my_meta_box_text'] ) ? esc_attr( $values['my_meta_box_text'][0] ) : '';
 	//$selected = isset( $values['my_meta_box_select'] ) ? esc_attr( $values['my_meta_box_select'][0] ) : '';
 	//$check = isset( $values['my_meta_box_check'] ) ? esc_attr( $values['my_meta_box_check'][0] ) : '';
+	$default_post_status = 'publish';
+	$default_push_type = 'now';
+	$default_view = 'off';
 
-	$selected_osrp_mb_postStatus = isset( $values['osrp_mb_postStatus'] ) ? esc_attr( $values['osrp_mb_postStatus'][0] ) : '';
-	$selected_osrp_mb_postWhen = isset( $values['osrp_mb_postWhen'] ) ? esc_attr( $values['osrp_mb_postWhen'][0] ) : '';
-	$check_osrp_mb_postView = isset( $values['osrp_mb_postView'] ) ? esc_attr( $values['osrp_mb_postView'][0] ) : '';
-	$text_osrp_mb_postWhenSched = isset( $values['osrp_mb_postWhenSched'] ) ? esc_attr( $values['osrp_mb_postWhenSched'][0] ) : '';
 	wp_nonce_field( 'osrp_mb_nonce', 'meta_box_nonce' ); ?>
 	
 	<link rel="stylesheet" type="text/css" href="<?php echo plugins_url('css/osrp-styles.css', __FILE__); ?>">
-	<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css">
-	<script type="text/javascript" src="/wp-includes/js/jquery/ui/jquery.ui.datepicker.min.js"></script>
 	<script type="text/javascript">
 		jQuery(document).ready(function($) {
-			$( "#osrp_mb_postWhenSched" ).datepicker();
+			$( "#osrp-site-list" ).change(function() {
+				$this = $('option:selected', this);
+				$post_status = $this.attr('status-create');
+				$date_release = $this.attr('status-publish') != 'now' ? 'schedule' : 'now';
+				$publish_date = $this.attr('publish-date');
+				$view = $this.attr('view');
+
+				$(".osrp_mb_postStatus[value="+$post_status+"]").attr("checked", "checked");
+
+				if('on' == $view) {
+					$( "#osrp_mb_postView" ).attr('checked', 'checked');
+				}
+				else {
+					$( "#osrp_mb_postView" ).removeAttr('checked');
+				}
+
+				if($(this).children("option:selected").length > 1) {
+					$(".osrp_mb_postWhen[value=now]").attr("checked", "checked");
+				}
+				else {
+					$(".osrp_mb_postWhen[value="+$date_release+"]").attr("checked", "checked");					
+				}
+			});
+			$(".osrp_mb_postStatus").on("click change", function(e) {
+				$( "#osrp-site-list option:selected" ).attr('status-create', $(this).val());
+			});
+			$(".osrp_mb_postWhen").on("click change", function(e) {
+				$( "#osrp-site-list option:selected" ).attr('status-publish', $(e.currentTarget).val());
+			});
+			
+			$("#osrp_mb_postView").on("change keyUp", function(){
+				if($(':checked', this)) {
+					$( "#osrp-site-list option:selected" ).attr('view', 'on');
+				}
+				else {
+					$( "#osrp-site-list option:selected" ).attr('view', 'off');
+				}
+			});
 		});
 	</script>
 
 	<table id="osrp_table">
 			<tr valign="top">
 				<td>
-					<select name="cars" multiple>
-						<?php foreach ( get_remote_sites() as $remoteSite ) : ?>				
-							  <option value="<?php echo $remoteSite->ID; ?>">
-							  	<?php echo $remoteSite->site_address . " " . (check_push_status( $remoteSite->ID, $post->ID ) ? "(pushed)" : ""); ?>
-							  </option>
-						<?php endforeach; ?>
+					<select id="osrp-site-list" multiple>
+					<?php foreach ( get_remote_sites() as $remoteSite ) : $distributed_posts = check_push_status($remoteSite->ID, $post->ID);
+							$post_status = $distributed_posts != null ? $distributed_posts["post_status"] : $default_post_status;
+							$push_type = $distributed_posts != null ? $distributed_posts["push_type"] : $default_push_type;
+							$date_release = $distributed_posts != null ? $distributed_posts["date_release"] : '';
+							$view = $distributed_posts != null ? $distributed_posts["view"] : $default_view; ?>				
+						  <option value="<?php echo $remoteSite->ID; ?>" status-create="<?php echo $post_status; ?>" status-publish="<?php echo $push_type; ?>" publish-date="<?php echo $date_release; ?>" view="<?php echo $view; ?>">
+						  	<?php echo $remoteSite->site_address . " " . (check_push_status( $remoteSite->ID, $post->ID ) ? "(pushed)" : ""); ?>
+						  </option>
+					<?php endforeach; ?>
 					</select>
 				</td>
 				<td>
-					<label><input type="radio" name="osrp_mb_postStatus" value="publish" <?php selected( $selected_osrp_mb_postStatus, 'publish' ); ?> />Publish</label> <label><input type="radio" name="osrp_mb_postStatus" value="draft" <?php selected( $selected_osrp_mb_postStatus, 'draft' ); ?> />Create only</label><br/>
-					<label><input type="radio" name="osrp_mb_postWhen" value="now" <?php selected( $selected_osrp_mb_postWhen, 'now' ); ?> />Release now</label> <label><input type="radio" name="osrp_mb_postWhen" value="schedule" <?php selected( $selected_osrp_mb_postWhen, 'scheduled' ); ?> />Schedule</label><br/>
-					<input type="text" name="osrp_mb_postWhenSched" value="<?php echo $text_osrp_mb_postWhenSched; ?>" id="osrp_mb_postWhenSched" placeholder="mm/dd/yyyy" /><br/>
-					<label><input type="checkbox" name="osrp_mb_postView" <?php checked( $check_osrp_mb_postView, 'on' ); ?> /> View</label><br/><br/>
+					<label><input type="radio" class="osrp_mb_postStatus" name="osrp_mb_postStatus" value="publish" <?php checked( $default_post_status, 'publish' ); ?> />Publish</label> 
+					<label><input type="radio" class="osrp_mb_postStatus" name="osrp_mb_postStatus" value="draft" <?php checked( $default_post_status, 'draft' ); ?> />Create only</label><br/>
+					<label><input type="radio" class="osrp_mb_postWhen" name="osrp_mb_postWhen" value="now" <?php checked( $default_push_type, 'now' ); ?> />Release now</label> 
+					<label><input type="radio" class="osrp_mb_postWhen" name="osrp_mb_postWhen" value="schedule" <?php checked( $default_push_type, 'scheduled' ); ?> />Schedule</label><br/>
+					<label><input type="checkbox" id="osrp_mb_postView" name="osrp_mb_postView" <?php checked( $default_view, 'on' ); ?> value="" /> View</label><br/><br/>
 				</td>
 			</tr>
 			<tr>
@@ -90,10 +129,6 @@ function osrp_meta_box_save( $post_id )
 	);
 
 	// Probably a good idea to make sure your data is set
-	if( isset( $_POST['osrp_mb_postWhenSched'] ) )
-		update_post_meta( $post_id, 'osrp_mb_postWhenSched', wp_kses( $_POST['osrp_mb_postWhenSched'], $allowed ) );
-	
-	// Probably a good idea to make sure your data is set
 	// if( isset( $_POST['my_meta_box_text'] ) )
 	// 	update_post_meta( $post_id, 'my_meta_box_text', wp_kses( $_POST['my_meta_box_text'], $allowed ) );
 		
@@ -117,6 +152,9 @@ function check_push_status( $site_id, $post_id ) {
 
 	$tbl = $wpdb->prefix . "osrp_distributed_posts";
 	$result = $wpdb->get_row("SELECT * FROM $tbl WHERE original_post_ID='$post_id' AND remote_site_ID='$site_id'");
+	if(!$result) {
+		return false;
+	}
 	return $result;
 }
 ?>
